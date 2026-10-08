@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AJI HR</title>
+<meta name="theme-color" content="#111827">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AJI HR">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script>
+/* =====================================================================
+   رابط النظام: الصق هنا رابط النشر من Apps Script (ينتهي بـ /exec)
+   ===================================================================== */
+var APP_URL = 'https://script.google.com/macros/s/AKfycbwAUYQdTPIQs3DpnAa84CD1w8xqFQm_pjNfIYzxFDnzyWkVCQ41HUwyExFli9YtFfJz/exec';
+</script>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#f4f6f8;font-family:Arial,Tahoma,sans-serif;color:#1f2937;overflow:hidden}
+  #frame{position:fixed;top:env(safe-area-inset-top,0);right:0;bottom:0;left:0;width:100%;height:calc(100% - env(safe-area-inset-top,0px));border:0;background:#f4f6f8}
+  #splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#f4f6f8;z-index:5;padding:24px;text-align:center}
+  #splash img{width:120px;height:120px;border-radius:26px;box-shadow:0 8px 30px rgba(0,0,0,.10)}
+  #splash .t{font-size:15px;color:#6b7280;line-height:1.8;max-width:420px}
+  .spin{width:28px;height:28px;border:3px solid #d1d5db;border-top-color:#111827;border-radius:50%;animation:s 1s linear infinite}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .btn{display:inline-block;background:#111827;color:#fff;border:0;border-radius:10px;padding:12px 18px;font:bold 15px Arial,Tahoma,sans-serif;text-decoration:none;cursor:pointer}
+  .btn.sec{background:#e5e7eb;color:#111827}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .hidden{display:none!important}
+  #install{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:6;background:#111827;color:#fff;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:14px;line-height:1.7}
+  #install .txt{flex:1}
+  #install button{background:#fff;color:#111827;border:0;border-radius:9px;padding:9px 12px;font:bold 14px Arial,Tahoma,sans-serif;cursor:pointer;white-space:nowrap}
+  #install .x{background:transparent;color:#fff;font-size:20px;padding:4px 8px}
+</style>
+</head>
+<body>
+<iframe id="frame" title="AJI HR System" allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+<div id="splash">
+  <img src="icons/icon-192.png" alt="AJi">
+  <div class="spin" id="spin"></div>
+  <div class="t" id="splashText">جاري فتح النظام...</div>
+  <div class="row hidden" id="splashBtns">
+    <button class="btn" onclick="startApp()">إعادة المحاولة</button>
+    <a class="btn sec" id="openBrowser" target="_blank" rel="noopener">فتح في المتصفح</a>
+  </div>
+</div>
+
+<div id="install" class="hidden">
+  <div class="txt" id="installTxt"></div>
+  <button id="installBtn" class="hidden">تثبيت</button>
+  <button class="x" onclick="hideInstall(true)" aria-label="إغلاق">×</button>
+</div>
+
+<script>
+(function(){
+  var frame=document.getElementById('frame'),splash=document.getElementById('splash'),txt=document.getElementById('splashText'),
+      spin=document.getElementById('spin'),btns=document.getElementById('splashBtns'),openB=document.getElementById('openBrowser'),timer=null;
+  function configured(){return /^https:\/\/script\.google\.com\/(a\/[^\/]+\/)?macros\/s\/[A-Za-z0-9_-]+\/(exec|dev)/.test(APP_URL)}
+  function show(msg,withButtons){splash.classList.remove('hidden');txt.textContent=msg;spin.classList.toggle('hidden',!!withButtons);btns.classList.toggle('hidden',!withButtons)}
+  window.startApp=function(){
+    if(!configured()){show('لم يُضبط رابط النظام بعد. افتح الملف index.html وضع رابط النشر من Apps Script مكان https://script.google.com/macros/s/AKfycbwAUYQdTPIQs3DpnAa84CD1w8xqFQm_pjNfIYzxFDnzyWkVCQ41HUwyExFli9YtFfJz/exec.',false);spin.classList.add('hidden');return}
+    openB.href=APP_URL;
+    if(!navigator.onLine){show('لا يوجد اتصال بالإنترنت. تحقق من الاتصال ثم أعد المحاولة.',true);return}
+    show('جاري فتح النظام...',false);
+    clearTimeout(timer);
+    timer=setTimeout(function(){show('الاتصال بطيء أو تعذر فتح النظام. أعد المحاولة، أو افتحه في المتصفح.',true)},30000);
+    frame.onload=function(){clearTimeout(timer);splash.classList.add('hidden')};
+    frame.src=APP_URL;
+  };
+  window.addEventListener('offline',function(){show('انقطع الاتصال بالإنترنت. عند عودته اضغط «إعادة المحاولة».',true)});
+  window.addEventListener('online',function(){if(!splash.classList.contains('hidden'))startApp()});
+  startApp();
+
+  /* ---------- install hint (only when opened in the browser, not as the installed app) ---------- */
+  var box=document.getElementById('install'),itxt=document.getElementById('installTxt'),ibtn=document.getElementById('installBtn'),deferred=null;
+  function standalone(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true}
+  function dismissed(){try{return localStorage.getItem('aji_install_hidden')==='1'}catch(e){return false}}
+  window.hideInstall=function(remember){box.classList.add('hidden');if(remember){try{localStorage.setItem('aji_install_hidden','1')}catch(e){}}};
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(!standalone()&&!dismissed()){
+    if(ios){itxt.textContent='لتثبيت التطبيق: اضغط زر المشاركة ⬆︎ في Safari ثم «إضافة إلى الشاشة الرئيسية».';box.classList.remove('hidden')}
+    window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;itxt.textContent='ثبّت تطبيق AJI HR على جهازك ليفتح من الشاشة الرئيسية.';ibtn.classList.remove('hidden');box.classList.remove('hidden')});
+  }
+  ibtn.onclick=function(){if(!deferred)return;deferred.prompt();deferred.userChoice.then(function(){deferred=null;hideInstall(false)})};
+  window.addEventListener('appinstalled',function(){hideInstall(true)});
+
+  if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
+})();
+</script>
+</body>
+</html>
